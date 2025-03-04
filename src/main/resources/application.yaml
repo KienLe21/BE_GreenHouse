@@ -1,0 +1,14 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/be_greenhouse"
+    username: kienle
+    password: kienle@2105
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
