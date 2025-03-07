@@ -8,9 +8,13 @@ import com.example.BE_GreenHouse.mapper.UserMapper;
 import com.example.BE_GreenHouse.model.User;
 import com.example.BE_GreenHouse.repository.UserRepository;
 import com.example.BE_GreenHouse.service.inter.UserService;
+import com.example.BE_GreenHouse.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     final private UserRepository userRepository;
     final private UserMapper userMapper;
-
+    final private JwtUtils jwtUtils;
 
     @Override
     public Response register(User user) {
@@ -28,6 +32,9 @@ public class UserServiceImpl implements UserService {
             if(user.getRole() == null || user.getRole().isBlank()){
                 user.setRole("USER");
             }
+
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             User user1 = userRepository.save(user);
             response.setUser(userMapper.toUserDTO(user1));
@@ -48,8 +55,14 @@ public class UserServiceImpl implements UserService {
         Response response = new Response();
         try {
             User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new OurException("User not found"));
-            if(user.getPassword().equals(loginRequest.getPassword())){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
+
+            boolean authenticated = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
+
+            if(authenticated){
                 user.setStatus("ACTIVE");
+                String token = jwtUtils.generateToken(user);
+                response.setToken(token);
                 response.setUser(userMapper.toUserDTO(user));
                 response.setStatusCode(200);
                 response.setMessage("User logged in successfully");
@@ -57,6 +70,26 @@ public class UserServiceImpl implements UserService {
                 response.setStatusCode(400);
                 response.setMessage("Invalid password");
             }
+        } catch (OurException e) {
+            response.setStatusCode(400);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    public Response getMyInfo() {
+        Response response = new Response();
+        try {
+            var context = SecurityContextHolder.getContext();
+            String email = context.getAuthentication().getName();
+            User user = userRepository.findByEmail(email).orElseThrow(() -> new OurException("User not found"));
+            response.setUser(userMapper.toUserDTO(user));
+            response.setStatusCode(200);
+            response.setMessage("Userinfo fetched successfully");
         } catch (OurException e) {
             response.setStatusCode(400);
             response.setMessage(e.getMessage());
@@ -148,4 +181,6 @@ public class UserServiceImpl implements UserService {
         }
         return response;
     }
+
+
 }

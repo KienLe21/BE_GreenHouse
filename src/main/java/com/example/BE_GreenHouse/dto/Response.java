@@ -12,6 +12,8 @@ public class Response {
 
     private String message;
 
+    private String token;
+
     private UserDTO user;
 
     private List<UserDTO> usersList;

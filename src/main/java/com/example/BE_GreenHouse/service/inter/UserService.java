@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
     Response register(User user);
     Response login(LoginRequest loginRequest);
+    Response getMyInfo();
     Response getAllUsers(Pageable pageable);
     Response getUserById(Long id);
     Response updateUser(UserDTO user, Long userId);
