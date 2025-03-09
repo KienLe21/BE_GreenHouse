@@ -29,6 +29,10 @@ public class UserServiceImpl implements UserService {
     public Response register(User user) {
         Response response = new Response();
         try {
+            if (userRepository.existsByEmail(user.getEmail())){
+                throw new OurException("Email already exists");
+            }
+
             if(user.getRole() == null || user.getRole().isBlank()){
                 user.setRole("USER");
             }
