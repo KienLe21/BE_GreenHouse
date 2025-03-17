@@ -1,6 +1,6 @@
 package com.example.BE_GreenHouse.service;
 
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -9,20 +9,28 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class MqttPublisherService {
-    private String BROKER_URL = "tcp://io.adafruit.com:1883";
+    @Value("${mqtt.brokerUrl}")
+    private String BROKER_URL;
 
-    private String USERNAME = "htann04";
+    @Value("${mqtt.username}")
+    private String USERNAME;
 
-    private String API_KEY = "aio_NCVK16TWkQxaq3kfASVY3Yj0toCJ";
+    @Value("${mqtt.apiKey}")
+    private String API_KEY;
 
-    private String CLIENT_ID = "be_greenhouse";
+    @Value("${mqtt.clientId}")
+    private String CLIENT_ID;
 
     private MqttClient client;
 
-    public MqttPublisherService() {
+    @PostConstruct
+    public void init() {
         try {
             MqttConnectOptions options = new MqttConnectOptions();
             options.setUserName(USERNAME);
@@ -39,7 +47,7 @@ public class MqttPublisherService {
         try {
             String topic = USERNAME + "/feeds/" + device;
             client.publish(topic, new MqttMessage(command.getBytes()));
-            log.info("Sent command: " + device + " -> " + command);
+            log.info("Sent command: {} -> {} ", topic, command);
         } catch (MqttException e) {
             e.printStackTrace();
         }

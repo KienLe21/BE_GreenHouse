@@ -16,8 +16,8 @@ spring:
 jwt:
   signerKey : "DADN_CNPM_L08_Nhom2_HK242_1234567890"
 
-#mqtt:
-#  brokerUrl: "tcp://io.adafruit.com:1883"
-#  username: "htann04"
-#  apiKey: "aio_byLc21OberVRA2alJMLpkdzxcvXt"
-#  clientId: "be_greenhouse"
+mqtt:
+  brokerUrl: "tcp://io.adafruit.com:1883"
+  username: "htann04"
+  apiKey: "${MQTT_API_KEY}"
+  clientId: "be_greenhouse"

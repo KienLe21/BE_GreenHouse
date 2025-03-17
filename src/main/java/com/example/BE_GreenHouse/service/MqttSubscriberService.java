@@ -17,17 +17,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.PostConstruct;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MqttSubscriberService {
-    private String BROKER_URL = "tcp://io.adafruit.com:1883";
+    @Value("${mqtt.brokerUrl}")
+    private String BROKER_URL;
 
-    private String USERNAME = "htann04";
+    @Value("${mqtt.username}")
+    private String USERNAME;
 
-    private String API_KEY = "aio_NCVK16TWkQxaq3kfASVY3Yj0toCJ";
+    @Value("${mqtt.apiKey}")
+    private String API_KEY;
 
-    private String CLIENT_ID = "be_greenhouse";
+    @Value("${mqtt.clientId}")
+    private String CLIENT_ID;
 
     private final SensorDataRepository sensorDataRepository;
 
@@ -35,6 +41,7 @@ public class MqttSubscriberService {
 
     private MqttClient client;
 
+    @PostConstruct
     public void connectAndSubscribe() {
         try {
             MqttConnectOptions options = new MqttConnectOptions();
@@ -57,14 +64,14 @@ public class MqttSubscriberService {
             for (String topic : topics) {
                 client.subscribe(topic, (topic1, message) -> {
                     String payload = new String(message.getPayload());
-                    log.info("Received message: " + topic1 + " -> " + payload);
+                    log.info("Received message: {} -> {}", topic1, payload);
 
                     // Handle the incoming data
                     handleIncomingData(topic1, payload);
                 });
             }
 
-            System.out.println("Connected to MQTT and subscribed to topics.");
+            log.info("Connected to MQTT and subscribed to topics.");
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -99,11 +106,11 @@ public class MqttSubscriberService {
                 sensorDataRepository.save(sensor);
             }
 
-            log.info("Saved data: " + feed + " | Time: " + createdAtStr + " | Value: " + valueStr);
+            log.info("Saved data: {} | Time: {} | Value: {}", feed, createdAtStr, valueStr);
 
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("Error parsing MQTT message: " + payload);
+            log.error("Error parsing MQTT message: {}", payload);
         }
     }
 }
