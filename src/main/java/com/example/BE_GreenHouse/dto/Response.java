@@ -1,5 +1,7 @@
 package com.example.BE_GreenHouse.dto;
 
+import com.example.BE_GreenHouse.model.DeviceStatus;
+import com.example.BE_GreenHouse.model.SensorData;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -17,6 +19,10 @@ public class Response {
     private UserDTO user;
 
     private List<UserDTO> usersList;
+
+    private DeviceStatus deviceStatus;
+
+    private List<SensorData> sensorDataList;
 
     //Pagination information
     private Integer currentPage;
