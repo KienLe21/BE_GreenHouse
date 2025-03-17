@@ -39,8 +39,12 @@ public class UserServiceImpl implements UserService {
 
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+            user.setStatus("ACTIVE");
             User user1 = userRepository.save(user);
+
+            String token = jwtUtils.generateToken(user1);
+
+            response.setToken(token);
             response.setUser(userMapper.toUserDTO(user1));
             response.setStatusCode(200);
             response.setMessage("User registered successfully");
