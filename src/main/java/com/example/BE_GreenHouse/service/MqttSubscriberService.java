@@ -82,8 +82,17 @@ public class MqttSubscriberService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(payload);
 
-            String createdAtStr = jsonNode.get("created_at").asText();
-            String valueStr = jsonNode.get("value").asText();
+            //JsonNode createdAtNode = jsonNode.get("created_at");
+            JsonNode valueNode = jsonNode.get("value");
+
+            if (valueNode == null) {
+                log.error("Missing required fields in the payload: {}", payload);
+                return;
+            }
+
+            //String createdAtStr = createdAtNode.asText();
+            String createdAtStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ssa"));
+            String valueStr = valueNode.asText();
 
             // Chuyển đổi thời gian từ Adafruit IO về LocalDateTime
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ssa");
