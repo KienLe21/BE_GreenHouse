@@ -48,7 +48,8 @@ public class MqttSubscriberService {
             options.setUserName(USERNAME);
             options.setPassword(API_KEY.toCharArray());
 
-            client = new MqttClient(BROKER_URL, CLIENT_ID);
+            client = new MqttClient(BROKER_URL, CLIENT_ID + "-subscriber");
+
             client.connect(options);
 
             String[] topics = {
@@ -73,33 +74,18 @@ public class MqttSubscriberService {
 
             log.info("Connected to MQTT and subscribed to topics.");
         } catch (MqttException e) {
-            e.printStackTrace();
+            log.error("Error connecting to MQTT broker", e);
         }
     }
 
     private void handleIncomingData(String topic, String payload) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(payload);
+            // Lấy giá trị thời gian hiện tại
+            LocalDateTime createdAt = LocalDateTime.now();
 
-            //JsonNode createdAtNode = jsonNode.get("created_at");
-            JsonNode valueNode = jsonNode.get("value");
-
-            if (valueNode == null) {
-                log.error("Missing required fields in the payload: {}", payload);
-                return;
-            }
-
-            //String createdAtStr = createdAtNode.asText();
-            String createdAtStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ssa"));
-            String valueStr = valueNode.asText();
-
-            // Chuyển đổi thời gian từ Adafruit IO về LocalDateTime
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ssa");
-            LocalDateTime createdAt = LocalDateTime.parse(createdAtStr, formatter);
-
-            // Lấy tên thiết bị hoặc cảm biến
+            // Chuyển payload sang số hoặc trạng thái
             String feed = topic.substring(topic.lastIndexOf("/") + 1);
+            String valueStr = payload.trim();
 
             if (feed.equals("fan") || feed.equals("led") || feed.equals("water-pump")) {
                 DeviceStatus device = new DeviceStatus();
@@ -115,11 +101,10 @@ public class MqttSubscriberService {
                 sensorDataRepository.save(sensor);
             }
 
-            log.info("Saved data: {} | Time: {} | Value: {}", feed, createdAtStr, valueStr);
-
+            log.info("Saved data: {} | Time: {} | Value: {}", feed, createdAt, valueStr);
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Error parsing MQTT message: {}", payload);
+            log.error("Error parsing MQTT message: {}", payload, e);
         }
     }
+
 }

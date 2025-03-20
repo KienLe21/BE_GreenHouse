@@ -36,9 +36,12 @@ public class MqttPublisherService {
             options.setUserName(USERNAME);
             options.setPassword(API_KEY.toCharArray());
 
-            client = new MqttClient(BROKER_URL, CLIENT_ID);
+            client = new MqttClient(BROKER_URL, CLIENT_ID + "-publisher");
             client.connect(options);
+
+            log.info("Connected to MQTT and ready to publish");
         } catch (MqttException e) {
+            log.error("Error connecting to MQTT broker", e);
             e.printStackTrace();
         }
     }
