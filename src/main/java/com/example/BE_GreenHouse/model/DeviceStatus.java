@@ -20,7 +20,11 @@ public class DeviceStatus {
     private Long id;
 
     private String device; // "fan", "led", "water_pump"
-    private String status; // "ON" hoặc "OFF"
+    private String status; // "ON" hoặc "OFF" hoặc mã màu RGB
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
 

@@ -1,13 +1,11 @@
 package com.example.BE_GreenHouse.model;
 
-import com.zaxxer.hikari.util.ClockSource;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.List;
 
 
 @Entity
@@ -28,5 +26,8 @@ public class User {
     private String password;
     private String status = "INACTIVE";
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<DeviceStatus> deviceStatusList;
 
 }

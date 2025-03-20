@@ -20,7 +20,9 @@ public class Response {
 
     private List<UserDTO> usersList;
 
-    private DeviceStatus deviceStatus;
+    private DeviceDTO device;
+
+    private List<DeviceDTO> deviceList;
 
     private List<SensorData> sensorDataList;
 
