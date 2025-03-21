@@ -88,6 +88,11 @@ public class MqttSubscriberService {
             String valueStr = payload.trim();
 
             if (feed.equals("fan") || feed.equals("led") || feed.equals("water-pump")) {
+                if (deviceStatusRepository.existsByDeviceAndUpdatedAtWithinOneSecond(feed, createdAt)) {
+                    log.info("Duplicate data: {} | Time: {} | Value: {}", feed, createdAt, valueStr);
+                    return;
+                }
+
                 DeviceStatus device = new DeviceStatus();
                 device.setDevice(feed);
                 device.setStatus(valueStr);
