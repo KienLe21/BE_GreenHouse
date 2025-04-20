@@ -21,6 +21,7 @@ public class DeviceStatus {
 
     private String device; // "fan", "led", "water_pump"
     private String status; // "ON" hoặc "OFF" hoặc mã màu RGB
+    private String sensorValue;
     private LocalDateTime updatedAt;
 
     @ManyToOne

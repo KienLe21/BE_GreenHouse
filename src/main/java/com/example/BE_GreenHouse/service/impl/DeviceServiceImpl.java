@@ -87,6 +87,7 @@ public class DeviceServiceImpl implements DeviceService {
         try {
             String device = deviceDTO.getDevice();
             String status = deviceDTO.getStatus();
+            String sensorValue = deviceDTO.getSensorValue();
 
             var context = SecurityContextHolder.getContext();
             String email = context.getAuthentication().getName();
@@ -100,6 +101,7 @@ public class DeviceServiceImpl implements DeviceService {
             DeviceStatus deviceStatus = new DeviceStatus();
             deviceStatus.setDevice(device);
             deviceStatus.setStatus(status);
+            deviceStatus.setSensorValue(sensorValue);
             deviceStatus.setUpdatedAt(java.time.LocalDateTime.now());
             deviceStatus.setUser(user);
             deviceStatusRepository.save(deviceStatus);
