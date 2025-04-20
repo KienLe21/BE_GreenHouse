@@ -24,6 +24,8 @@ public class User {
     private String name;
     @Size(min = 8, message = "PASSWORD_INVALID")
     private String password;
+    private String phoneNumber;
+    private String address;
     private String status = "INACTIVE";
     private String role;
 
