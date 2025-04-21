@@ -158,6 +158,12 @@ public class UserServiceImpl implements UserService {
             if (user.getName() != null) {
                 user1.setName(user.getName());
             }
+            if (user.getPhoneNumber() != null) {
+                user1.setPhoneNumber(user.getPhoneNumber());
+            }
+            if (user.getAddress() != null) {
+                user1.setAddress(user.getAddress());
+            }
             userRepository.save(user1);
             response.setUser(userMapper.toUserDTO(user1));
             response.setStatusCode(200);
